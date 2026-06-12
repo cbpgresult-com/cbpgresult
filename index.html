@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>College Result Portal</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
+}
+
+body{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+padding:20px;
+background:
+linear-gradient(
+135deg,
+#0f172a,
+#1e293b,
+#2563eb,
+#06b6d4
+);
+background-size:400% 400%;
+animation:bgMove 12s ease infinite;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.portal-box{
+width:100%;
+max-width:520px;
+background:rgba(255,255,255,.12);
+backdrop-filter:blur(18px);
+padding:30px;
+border-radius:25px;
+box-shadow:0 15px 50px rgba(0,0,0,.25);
+border:1px solid rgba(255,255,255,.15);
+}
+
+.logo{
+width:85px;
+height:85px;
+margin:auto;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:42px;
+background:rgba(255,255,255,.18);
+margin-bottom:15px;
+}
+
+.title{
+text-align:center;
+color:#fff;
+font-size:28px;
+font-weight:700;
+}
+
+.subtitle{
+text-align:center;
+color:#dbeafe;
+margin-top:4px;
+margin-bottom:25px;
+font-size:14px;
+}
+
+.input-group{
+margin-bottom:15px;
+}
+
+label{
+display:block;
+margin-bottom:7px;
+color:#fff;
+font-size:14px;
+font-weight:500;
+}
+
+input,
+select{
+width:100%;
+padding:14px;
+border:none;
+outline:none;
+border-radius:12px;
+font-size:15px;
+background:#fff;
+}
+
+input:focus,
+select:focus{
+box-shadow:0 0 0 4px rgba(255,255,255,.25);
+}
+
+.search-btn{
+width:100%;
+padding:15px;
+border:none;
+border-radius:14px;
+font-size:16px;
+font-weight:600;
+cursor:pointer;
+background:linear-gradient(
+45deg,
+#22c55e,
+#16a34a
+);
+color:#fff;
+transition:.3s;
+}
+
+.search-btn:hover{
+transform:translateY(-2px);
+}
+
+#error{
+margin-top:12px;
+text-align:center;
+font-size:14px;
+font-weight:500;
+color:#fecaca;
+}
+
+.loading{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.75);
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:9999;
+}
+
+.loader{
+width:65px;
+height:65px;
+border:5px solid #fff;
+border-top:5px solid transparent;
+border-radius:50%;
+animation:spin 1s linear infinite;
+}
+
+.loading p{
+color:#fff;
+margin-top:15px;
+font-size:16px;
+}
+
+@keyframes spin{
+100%{
+transform:rotate(360deg);
+}
+}
+
+/* RESULT POPUP */
+
+.popup{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+display:none;
+justify-content:center;
+align-items:center;
+background:rgba(0,0,0,.8);
+z-index:99999;
+}
+
+.popup-box{
+width:90%;
+max-width:380px;
+background:#fff;
+border-radius:25px;
+padding:30px;
+text-align:center;
+animation:zoomIn .4s ease;
+}
+
+@keyframes zoomIn{
+from{
+transform:scale(.6);
+opacity:0;
+}
+to{
+transform:scale(1);
+opacity:1;
+}
+}
+
+.success{
+width:95px;
+height:95px;
+margin:auto;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:48px;
+color:#fff;
+background:#22c55e;
+margin-bottom:15px;
+}
+
+.popup-title{
+font-size:26px;
+font-weight:700;
+color:#16a34a;
+margin-bottom:8px;
+}
+
+.student-name{
+font-size:20px;
+font-weight:600;
+color:#111827;
+margin-bottom:20px;
+}
+
+.download-btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:linear-gradient(
+45deg,
+#2563eb,
+#06b6d4
+);
+color:white;
+font-size:15px;
+font-weight:600;
+cursor:pointer;
+margin-bottom:10px;
+}
+
+.close-btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:12px;
+background:#ef4444;
+color:#fff;
+font-size:15px;
+cursor:pointer;
+}
+
+.result-screen{
+width:100%;
+height:100%;
+max-width:none;
+border-radius:0;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+padding:30px;
+}
+
+.frame-link{
+margin:15px 0 25px;
+font-size:15px;
+font-weight:500;
+color:#2563eb;
+word-break:break-all;
+background:#f3f4f6;
+padding:12px;
+border-radius:12px;
+width:100%;
+max-width:700px;
+}
+.popup-box.result-screen{
+width:95%;
+max-width:1200px;
+height:95vh;
+background:#fff;
+border-radius:20px;
+padding:15px;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+}
+
+.success{
+width:60px;
+height:60px;
+font-size:30px;
+margin-bottom:8px;
+}
+
+.popup-title{
+font-size:18px;
+margin-bottom:5px;
+}
+
+.student-name{
+font-size:16px;
+margin-bottom:10px;
+}
+
+#resultFrame{
+width:100%;
+flex:1;
+border:none;
+border-radius:12px;
+background:#fff;
+}
+
+.download-btn{
+margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="loading" id="loading">
+<div class="loader"></div>
+<p>Please wait...</p>
+</div>
+
+<div class="portal-box">
+
+<div class="logo">🎓</div>
+
+<div class="title">
+COLLEGE RESULT PORTAL
+</div>
+
+<div class="subtitle">
+Check Semester Examination Result
+</div>
+
+<div class="input-group">
+<label>Roll Number</label>
+<input
+type="tel"
+id="roll"
+placeholder="Enter Roll Number"
+inputmode="numeric"
+pattern="[0-9]*"
+autocomplete="off"
+maxlength="15"
+oninput="this.value=this.value.replace(/[^0-9]/g,'')">
+
+<div class="input-group">
+<label>Exam Type</label>
+<select id="examType">
+<option value="">Choose Exam Type</option>
+<option value="UG">UG</option>
+<option value="PG">PG</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>Select Course</label>
+<select id="course">
+<option value="">Choose Course</option>
+</select>
+</div>
+
+<select id="sem">
+<option value="">Choose Semester</option>
+</select>
+<div class="input-group">
+<label>Father Name</label>
+<input
+type="text"
+id="father"
+placeholder="Enter Father Name">
+</div>
+
+<button class="search-btn"
+onclick="searchResult()">
+Show Result
+</button>
+
+<div id="error"></div>
+
+</div>
+
+<div class="popup" id="resultPopup">
+
+<div class="popup-box result-screen">
+
+<div class="success">✓</div>
+
+<div class="popup-title">
+Result Found
+</div>
+
+<div class="student-name" id="studentName"></div>
+
+<iframe
+id="resultFrame"
+style="
+width:100%;
+height:400px;
+border:none;
+border-radius:12px;
+margin-top:15px;
+background:#fff;">
+</iframe>
+
+<button
+class="download-btn"
+onclick="openFullResult()">
+
+📄 View Full Result
+
+</button>
+
+<button
+class="close-btn"
+onclick="closePopup()">
+
+Close
+
+</button>
+
+</div>
+
+</div>
+
+
+
+<script>
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycbwcuRt0wI_st92B8kKVYjYbc_K80_ZU8QAAlFQ32-NpBUwYFnYHtWRWndosFzQxUc5U/exec";
+
+let resultLink = "";
+
+/* CLOSE POPUP */
+
+function closePopup(){
+
+document.getElementById("resultPopup").style.display = "none";
+document.getElementById("resultFrame").src = "";
+
+}
+
+/* OPEN FULL RESULT */
+
+function openFullResult(){
+
+if(resultLink){
+
+window.open(resultLink, "_blank");
+
+}
+
+}
+
+/* SEARCH RESULT */
+
+function searchResult(){
+
+let roll =
+document.getElementById("roll").value.trim();
+
+let examType =
+document.getElementById("examType").value;
+
+let course =
+document.getElementById("course").value;
+
+let sem =
+document.getElementById("sem").value;
+
+let father =
+document.getElementById("father").value.trim();
+
+let error =
+document.getElementById("error");
+
+error.innerHTML = "";
+
+/* VALIDATION */
+
+if(roll === ""){
+
+error.innerHTML =
+"⚠ Please enter Roll Number";
+
+return;
+
+}
+
+if(examType === ""){
+
+error.innerHTML =
+"⚠ Please select Exam Type";
+
+return;
+
+}
+
+if(course === ""){
+
+error.innerHTML =
+"⚠ Please select Course";
+
+return;
+
+}
+
+if(sem === ""){
+
+error.innerHTML =
+"⚠ Please select Semester";
+
+return;
+
+}
+
+if(father === ""){
+
+error.innerHTML =
+"⚠ Please enter Father Name";
+
+return;
+
+}
+
+/* SHOW LOADING */
+
+document.getElementById("loading")
+.style.display = "flex";
+
+/* API URL */
+
+let url =
+API_URL +
+"?roll=" + encodeURIComponent(roll) +
+"&examType=" + encodeURIComponent(examType) +
+"&course=" + encodeURIComponent(course) +
+"&sem=" + encodeURIComponent(sem) +
+"&father=" + encodeURIComponent(father);
+
+/* FETCH */
+
+fetch(url)
+
+.then(response => response.json())
+
+.then(data => {
+
+document.getElementById("loading")
+.style.display = "none";
+
+if(data.status === "found"){
+
+document.getElementById("studentName")
+.innerHTML =
+"🎓 " + (data.student || "Student");
+
+resultLink =
+data.link || "";
+
+document.getElementById("resultFrame")
+.src =
+resultLink;
+
+document.getElementById("resultPopup")
+.style.display =
+"flex";
+
+}else{
+
+error.innerHTML =
+"❌ Result Not Found";
+
+}
+
+})
+
+.catch(err => {
+
+document.getElementById("loading")
+.style.display =
+"none";
+
+error.innerHTML =
+"⚠ Server Error. Please try again.";
+
+console.log(err);
+
+});
+
+}
+
+/* ESC CLOSE */
+
+document.addEventListener(
+"keydown",
+function(e){
+
+if(e.key === "Escape"){
+
+closePopup();
+
+}
+
+}
+);
+
+/* OUTSIDE CLICK CLOSE */
+
+window.onclick = function(event){
+
+let popup =
+document.getElementById("resultPopup");
+
+if(event.target === popup){
+
+closePopup();
+
+}
+
+};
+
+/* EXAM TYPE CHANGE */
+
+document.getElementById("examType")
+.addEventListener("change", function(){
+
+let course =
+document.getElementById("course");
+
+let sem =
+document.getElementById("sem");
+
+course.innerHTML =
+'<option value="">Choose Course</option>';
+
+sem.innerHTML =
+'<option value="">Choose Semester</option>';
+
+if(this.value === "UG"){
+
+course.innerHTML += `
+<option value="BSC">B.Sc</option>
+<option value="BCOM">B.Com</option>
+<option value="BA">B.A</option>
+`;
+
+}
+
+if(this.value === "PG"){
+
+course.innerHTML += `
+<option value="MSC">M.Sc</option>
+<option value="MCOM">M.Com</option>
+`;
+
+}
+
+});
+
+/* COURSE CHANGE */
+
+document.getElementById("course")
+.addEventListener("change", function(){
+
+let sem =
+document.getElementById("sem");
+
+sem.innerHTML =
+'<option value="">Choose Semester</option>';
+
+if(this.value !== ""){
+
+sem.innerHTML += `
+<option value="1">1st Semester</option>
+<option value="2">2nd Semester</option>
+<option value="3">3rd Semester</option>
+<option value="4">4th Semester</option>
+<option value="5">5th Semester</option>
+<option value="6">6th Semester</option>
+`;
+
+}
+
+});
+let url =
+API_URL +
+"?roll=" + encodeURIComponent(roll) +
+"&course=" + encodeURIComponent(course) +
+"&sem=" + encodeURIComponent(sem) +
+"&father=" + encodeURIComponent(father);
+</script>
+
+</body>
+</html>
