@@ -292,9 +292,10 @@ width:100%;
 max-width:700px;
 }
 .popup-box.result-screen{
-width:95%;
+position:relative;
+width:98%;
 max-width:1200px;
-height:95vh;
+height:98vh;
 background:#fff;
 border-radius:20px;
 padding:15px;
@@ -316,10 +317,54 @@ margin-bottom:5px;
 }
 
 .student-name{
-font-size:16px;
-margin-bottom:10px;
+display:inline-block;
+margin:8px auto 12px;
+padding:8px 14px;
+
+font-size:14px;
+font-weight:600;
+line-height:1.4;
+
+color:#fff;
+
+background:linear-gradient(
+90deg,
+#2563eb,
+#06b6d4,
+#22c55e
+);
+
+background-size:300% 300%;
+
+border-radius:10px;
+
+border:2px solid rgba(255,255,255,.8);
+
+animation:
+gradientMove 3s linear infinite,
+blinkBorder 1s infinite alternate;
+
+box-shadow:
+0 0 10px rgba(37,99,235,.4);
+
+max-width:90%;
+word-break:break-word;
+}
+@keyframes gradientMove{
+0%{background-position:0% 50%;}
+100%{background-position:100% 50%;}
 }
 
+@keyframes blinkBorder{
+0%{
+border-color:#fff;
+box-shadow:0 0 5px #fff;
+}
+100%{
+border-color:#22c55e;
+box-shadow:0 0 15px #22c55e;
+}
+}
 #resultFrame{
 width:100%;
 flex:1;
@@ -428,6 +473,30 @@ font-weight:700;
 color:#fff;
 letter-spacing:.3px;
 }
+
+.popup-close{
+position:absolute;
+top:10px;
+right:10px;
+width:38px;
+height:38px;
+border:none;
+border-radius:50%;
+background:#ef4444;
+color:#fff;
+font-size:20px;
+font-weight:bold;
+cursor:pointer;
+z-index:1000;
+}
+.student-semester{
+margin-top:2px;
+margin-bottom: 7px;
+font-size:14px;
+font-weight:500;
+color:#6b7280;
+text-align:center;
+}
 </style>
 </head>
 
@@ -502,6 +571,7 @@ Show Result
 <div class="popup" id="resultPopup">
 
 <div class="popup-box result-screen">
+<button class="popup-close" onclick="closePopup()">✕</button>
 
 <div class="success">✓</div>
 
@@ -511,11 +581,13 @@ Result Found
 
 <div class="student-name" id="studentName"></div>
 
+<div class="student-semester" id="studentSemester"></div>
+
 <iframe
 id="resultFrame"
 style="
 width:100%;
-height:400px;
+height:75vh;
 border:none;
 border-radius:12px;
 margin-top:15px;
@@ -530,13 +602,7 @@ onclick="openFullResult()">
 
 </button>
 
-<button
-class="close-btn"
-onclick="closePopup()">
 
-Close
-
-</button>
 
 </div>
 
@@ -566,7 +632,12 @@ function openFullResult(){
 
 if(resultLink){
 
-window.open(resultLink, "_blank");
+const a = document.createElement("a");
+a.href = resultLink;
+a.download = "Result.pdf";
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
 
 }
 
@@ -673,7 +744,11 @@ if(data.status === "found"){
 
 document.getElementById("studentName")
 .innerHTML =
-"🎓 " + (data.student || "Student");
+"👨‍🎓 " + (data.student || "Student");
+
+document.getElementById("studentSemester")
+.innerHTML =
+"Semester : " + sem;
 
 resultLink =
 data.link || "";
