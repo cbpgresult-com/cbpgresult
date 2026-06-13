@@ -858,8 +858,7 @@ course.innerHTML += `
 if(this.value === "PG"){
 
 course.innerHTML += `
-<option value="MSC">M.Sc</option>
-<option value="MCOM">M.Com</option>
+<option value="MA">M.A</option>
 `;
 
 }
@@ -877,7 +876,7 @@ document.getElementById("sem");
 sem.innerHTML =
 '<option value="">Choose Semester</option>';
 
-if(this.value !== ""){
+if(this.value === "BSC" || this.value === "BCOM" || this.value === "BA"){
 
 sem.innerHTML += `
 <option value="1">1st Semester</option>
@@ -886,6 +885,17 @@ sem.innerHTML += `
 <option value="4">4th Semester</option>
 <option value="5">5th Semester</option>
 <option value="6">6th Semester</option>
+`;
+
+}
+
+if(this.value === "MA"){
+
+sem.innerHTML += `
+<option value="1">1st Semester</option>
+<option value="2">2nd Semester</option>
+<option value="3">3rd Semester</option>
+<option value="4">4th Semester</option>
 `;
 
 }
