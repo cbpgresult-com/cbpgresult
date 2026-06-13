@@ -551,6 +551,7 @@ oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 <option value="">Choose Exam Type</option>
 <option value="UG">UG</option>
 <option value="PG">PG</option>
+<option value="PROFESSIONAL">PROFESSIONAL</option>
 </select>
 </div>
 
@@ -765,7 +766,6 @@ document.getElementById("studentSemester")
 
 resultLink =
 data.link || "";
-
 document.getElementById("resultFrame")
 .src =
 resultLink;
@@ -862,7 +862,13 @@ course.innerHTML += `
 `;
 
 }
+if(this.value === "PROFESSIONAL"){
 
+course.innerHTML += `
+<option value="BED">B.Ed</option>
+`;
+
+}
 });
 
 /* COURSE CHANGE */
@@ -899,7 +905,16 @@ sem.innerHTML += `
 `;
 
 }
+if(this.value === "BED"){
 
+sem.innerHTML += `
+<option value="1">1st Semester</option>
+<option value="2">2nd Semester</option>
+<option value="3">3rd Semester</option>
+<option value="4">4th Semester</option>
+`;
+
+}
 });
 let url =
 API_URL +
