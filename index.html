@@ -313,30 +313,31 @@ max-width:1200px;
 height:98vh;
 background:#fff;
 border-radius:20px;
-padding:15px;
+padding:10px 15px 15px;
 display:flex;
 flex-direction:column;
 overflow:hidden;
 }
 
 .success{
-width:60px;
-height:60px;
-font-size:30px;
-margin-bottom:8px;
+width:42px;
+height:42px;
+font-size:22px;
+margin:0 auto 5px;
 }
 
 .popup-title{
-font-size:18px;
-margin-bottom:5px;
+font-size:14px;
+font-weight:700;
+margin-bottom:4px;
+color:#16a34a;
 }
 
 .student-name{
 display:inline-block;
-margin:8px auto 12px;
-padding:8px 14px;
-
-font-size:14px;
+margin:4px auto 6px;
+padding:6px 12px;
+font-size:13px;
 font-weight:600;
 line-height:1.4;
 
@@ -505,9 +506,9 @@ cursor:pointer;
 z-index:1000;
 }
 .student-semester{
-margin-top:2px;
-margin-bottom: 7px;
-font-size:14px;
+margin-top:0;
+margin-bottom:5px;
+font-size:13px;
 font-weight:500;
 color:#6b7280;
 text-align:center;
@@ -534,6 +535,47 @@ padding-top:10px !important;
 margin-top:0 !important;
 }
 
+}
+.pdf-loading{
+display:flex;
+gap:10px;
+}
+
+.pdf-loading span{
+width:14px;
+height:14px;
+border-radius:50%;
+background:#2563eb;
+animation:dotJump 0.8s infinite ease-in-out;
+}
+
+.pdf-loading span:nth-child(2){
+animation-delay:.15s;
+}
+
+.pdf-loading span:nth-child(3){
+animation-delay:.3s;
+}
+
+@keyframes dotJump{
+
+0%,80%,100%{
+transform:translateY(0);
+opacity:.5;
+}
+
+40%{
+transform:translateY(-12px);
+opacity:1;
+}
+
+}
+
+.pdf-text{
+margin-top:18px;
+font-size:18px;
+font-weight:600;
+color:#2563eb;
 }
 </style>
 </head>
@@ -624,6 +666,35 @@ Result Found
 
 <div class="student-semester" id="studentSemester"></div>
 
+<div id="pdfLoader" style="
+position:absolute;
+top:200px;
+left:15px;
+right:15px;
+bottom:80px;
+background:#fff;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:999;
+border-radius:12px;
+">
+
+<div class="pdf-loading">
+
+<span></span>
+<span></span>
+<span></span>
+
+</div>
+
+<p class="pdf-text">
+Loading PDF...
+</p>
+
+</div>
+
 <iframe
 id="resultFrame"
 style="
@@ -636,20 +707,70 @@ background:#fff;">
 </iframe>
 
 <button
+id="actionBtn"
 class="download-btn"
 onclick="openFullResult()">
-
-📄 View Full Result
-
+📄 Download Result
 </button>
 
 
-
 </div>
 
 </div>
 
+<div id="downloadLoader" style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.55);
+z-index:999999;
+justify-content:center;
+align-items:center;
+">
 
+<div style="
+width:170px;
+padding:18px;
+background:#fff;
+border-radius:18px;
+text-align:center;
+">
+<div id="downloadIcon" style="
+width:55px;
+height:55px;
+margin:auto;
+border:5px solid #e5e7eb;
+border-top:5px solid #2563eb;
+border-radius:50%;
+animation:spin 1s linear infinite;
+"></div>
+
+
+
+<div id="downloadPercent"
+style="
+margin-top:12px;
+font-size:22px;
+font-weight:700;
+color:#2563eb;
+">
+0%
+</div>
+
+<div id="downloadText" style="
+font-size:14px;
+font-weight:600;
+margin-top:3px;
+">
+Downloading...
+</div>
+
+</div>
+
+</div>
 
 <script>
 
@@ -670,27 +791,135 @@ const RESULT_SEMESTERS = {
 function closePopup(){
 
 document.getElementById("resultPopup").style.display = "none";
+
 document.getElementById("resultFrame").src = "";
+
+document.getElementById("pdfLoader").style.display = "none";
 
 }
 
 /* OPEN FULL RESULT */
 
-function openFullResult(){
+async function openFullResult(){
 
-if(resultLink){
+if(!resultLink) return;
+
+document.getElementById("downloadLoader").style.display="flex";
+
+let percent = 0;
+
+let timer = setInterval(function(){
+
+if(percent < 90){
+
+percent += 5;
+
+document.getElementById("downloadPercent").innerText =
+percent + "%";
+
+}
+
+},150);
+
+try{
+
+const response = await fetch(
+API_URL + "?download=" + encodeURIComponent(resultLink)
+);
+
+const base64 = await response.text();
+
+clearInterval(timer);
+
+document.getElementById("downloadPercent").innerText =
+"100%";
+document.getElementById("downloadIcon").style.border="none";
+document.getElementById("downloadIcon").style.animation="none";
+document.getElementById("downloadIcon").style.width="60px";
+document.getElementById("downloadIcon").style.height="60px";
+document.getElementById("downloadIcon").style.display="flex";
+document.getElementById("downloadIcon").style.alignItems="center";
+document.getElementById("downloadIcon").style.justifyContent="center";
+document.getElementById("downloadIcon").style.fontSize="42px";
+document.getElementById("downloadIcon").style.color="#22c55e";
+document.getElementById("downloadIcon").innerHTML="✓";
+
+document.getElementById("downloadText").innerText =
+"Download Completed";
+let btn = document.getElementById("actionBtn");
+
+btn.innerHTML = "✅ Open PDF";
+btn.style.background = "#22c55e";
+
+btn.onclick = function(){
+window.open(resultLink, "_blank");
+};
+
+const byteCharacters = atob(base64);
+
+const byteNumbers = new Array(byteCharacters.length);
+
+for(let i=0;i<byteCharacters.length;i++){
+
+byteNumbers[i] =
+byteCharacters.charCodeAt(i);
+
+}
+
+const blob = new Blob(
+[new Uint8Array(byteNumbers)],
+{type:"application/pdf"}
+);
+
+const url = URL.createObjectURL(blob);
 
 const a = document.createElement("a");
-a.href = resultLink;
-a.download = "Result.pdf";
+
+a.href = url;
+let rollNo =
+document.getElementById("roll").value.trim();
+
+let semester =
+document.getElementById("sem").value;
+
+a.download =
+rollNo + "_Semester_" + semester + ".pdf";
+
 document.body.appendChild(a);
+
 a.click();
-document.body.removeChild(a);
+
+a.remove();
+
+URL.revokeObjectURL(url);
+
+setTimeout(function(){
+
+document.getElementById("downloadLoader").style.display="none";
+
+document.getElementById("downloadPercent").innerText="0%";
+document.getElementById("downloadText").innerText="Downloading...";
+
+document.getElementById("downloadIcon").innerHTML="";
+document.getElementById("downloadIcon").style="";
+document.getElementById("downloadIcon").setAttribute(
+"style",
+"width:55px;height:55px;margin:auto;border:5px solid #e5e7eb;border-top:5px solid #2563eb;border-radius:50%;animation:spin 1s linear infinite;"
+);
+
+},500);
+
+}catch(e){
+
+clearInterval(timer);
+
+document.getElementById("downloadLoader").style.display="none";
+
+alert("Download Failed");
 
 }
 
 }
-
 /* SEARCH RESULT */
 
 function searchResult(){
@@ -807,14 +1036,24 @@ document.getElementById("studentSemester").innerHTML =
 }
 resultLink =
 data.link || "";
-document.getElementById("resultFrame")
-.src =
-resultLink;
+let pdfUrl =
+"https://docs.google.com/gview?embedded=true&url=" +
+encodeURIComponent(resultLink);
 
-document.getElementById("resultPopup")
-.style.display =
-"flex";
+document.getElementById("resultPopup").style.display = "flex";
 
+document.getElementById("pdfLoader").style.display = "flex";
+
+let frame =
+document.getElementById("resultFrame");
+
+frame.onload = function(){
+
+document.getElementById("pdfLoader").style.display = "none";
+
+};
+
+frame.src = pdfUrl;
 }else{
 
 error.innerHTML =
@@ -998,6 +1237,13 @@ API_URL +
 "&course=" + encodeURIComponent(course) +
 "&sem=" + encodeURIComponent(sem) +
 "&father=" + encodeURIComponent(father);
+
+let btn = document.getElementById("actionBtn");
+
+btn.innerHTML = "📄 Download Result";
+btn.style.background = "";
+
+btn.onclick = openFullResult;
 </script>
 
 </body>
