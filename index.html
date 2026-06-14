@@ -575,9 +575,9 @@ oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 <label></label>
 <select id="examType">
 <option value="">Choose Exam Type</option>
-<option value="UG">UG</option>
-<option value="PG">PG</option>
-<option value="PROFESSIONAL">PROFESSIONAL</option>
+<option value="UG">UG (2023-2026)</option>
+<option value="PG">PG (2023-2026)</option>
+<option value="PROFESSIONAL">PROFESSIONAL (2023-2025)</option>
 </select>
 </div>
 
@@ -803,8 +803,7 @@ document.getElementById("resultPopup")
 }else{
 
 error.innerHTML =
-"❌ Result Not Found";
-
+"<span style='font-size:18px;font-weight:700;'>🚫 RESULT NOT FOUND</span><br><small style='font-size:12px;font-weight:300;'>Record not available. Please enter correct details.</small>";
 }
 
 })
