@@ -657,6 +657,13 @@ const API_URL =
 "https://script.google.com/macros/s/AKfycbwcuRt0wI_st92B8kKVYjYbc_K80_ZU8QAAlFQ32-NpBUwYFnYHtWRWndosFzQxUc5U/exec";
 
 let resultLink = "";
+const RESULT_SEMESTERS = {
+  BSC:[1,2,3,4,5],
+  BCOM:[1,2,3,4,5,6],
+  BA:[1,2,3,4,5],
+  MA:[1,2,3],
+  BED:[1,2,3]
+};
 
 /* CLOSE POPUP */
 
@@ -926,49 +933,12 @@ document.getElementById("sem");
 sem.innerHTML =
 '<option value="">Choose Semester</option>';
 
-if(
-(this.value === "BSC" || this.value === "BCOM" || this.value === "BA")
-&&
-document.getElementById("examType").value !== "BACKPAPER"
-){
-sem.innerHTML += `
-<option value="1">1st Semester</option>
-<option value="2">2nd Semester</option>
-<option value="3">3rd Semester</option>
-<option value="4">4th Semester</option>
-<option value="5">5th Semester</option>
-<option value="6">6th Semester</option>
-`;
+let examType =
+document.getElementById("examType").value;
 
-}
+/* BACK PAPER = PURANA SYSTEM */
 
-if(
-this.value === "MA" &&
-document.getElementById("examType").value !== "BACKPAPER"
-){
-sem.innerHTML += `
-<option value="1">1st Semester</option>
-<option value="2">2nd Semester</option>
-<option value="3">3rd Semester</option>
-<option value="4">4th Semester</option>
-`;
-
-}
-if(
-this.value === "BED" &&
-document.getElementById("examType").value !== "BACKPAPER"
-){
-sem.innerHTML += `
-<option value="1">1st Semester</option>
-<option value="2">2nd Semester</option>
-<option value="3">3rd Semester</option>
-<option value="4">4th Semester</option>
-`;
-
-}
-if(
-document.getElementById("examType").value === "BACKPAPER"
-){
+if(examType === "BACKPAPER"){
 
 if(
 this.value === "BSC" ||
@@ -1001,7 +971,26 @@ sem.innerHTML += `
 
 }
 
+return;
 }
+
+/* NORMAL RESULT = RELEASED SEM ONLY */
+
+let semesters =
+RESULT_SEMESTERS[this.value] || [];
+
+semesters.forEach(function(s){
+
+let suffix =
+s==1 ? "st" :
+s==2 ? "nd" :
+s==3 ? "rd" : "th";
+
+sem.innerHTML +=
+`<option value="${s}">${s}${suffix} Semester</option>`;
+
+});
+
 });
 let url =
 API_URL +
