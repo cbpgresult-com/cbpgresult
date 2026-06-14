@@ -575,6 +575,7 @@ oninput="this.value=this.value.replace(/[^0-9]/g,'')">
 <label></label>
 <select id="examType">
 <option value="">Choose Exam Type</option>
+<option value="BACKPAPER">BACK PAPER</option>
 <option value="UG">UG (2023-2026)</option>
 <option value="PG">PG (2023-2026)</option>
 <option value="PROFESSIONAL">PROFESSIONAL (2023-2025)</option>
@@ -786,10 +787,17 @@ document.getElementById("studentName")
 .innerHTML =
 "👨‍🎓 " + (data.student || "Student");
 
-document.getElementById("studentSemester")
-.innerHTML =
+if(examType === "BACK PAPER" || examType === "BACKPAPER"){
+
+document.getElementById("studentSemester").innerHTML =
+"Semester : " + sem + " (BACK PAPER)";
+
+}else{
+
+document.getElementById("studentSemester").innerHTML =
 "Semester : " + sem;
 
+}
 resultLink =
 data.link || "";
 document.getElementById("resultFrame")
@@ -894,6 +902,17 @@ course.innerHTML += `
 `;
 
 }
+if(this.value === "BACKPAPER"){
+
+course.innerHTML += `
+<option value="BSC">B.Sc</option>
+<option value="BCOM">B.Com</option>
+<option value="BA">B.A</option>
+<option value="MA">M.A</option>
+<option value="BED">B.Ed</option>
+`;
+
+}
 });
 
 /* COURSE CHANGE */
@@ -907,7 +926,55 @@ document.getElementById("sem");
 sem.innerHTML =
 '<option value="">Choose Semester</option>';
 
-if(this.value === "BSC" || this.value === "BCOM" || this.value === "BA"){
+if(
+(this.value === "BSC" || this.value === "BCOM" || this.value === "BA")
+&&
+document.getElementById("examType").value !== "BACKPAPER"
+){
+sem.innerHTML += `
+<option value="1">1st Semester</option>
+<option value="2">2nd Semester</option>
+<option value="3">3rd Semester</option>
+<option value="4">4th Semester</option>
+<option value="5">5th Semester</option>
+<option value="6">6th Semester</option>
+`;
+
+}
+
+if(
+this.value === "MA" &&
+document.getElementById("examType").value !== "BACKPAPER"
+){
+sem.innerHTML += `
+<option value="1">1st Semester</option>
+<option value="2">2nd Semester</option>
+<option value="3">3rd Semester</option>
+<option value="4">4th Semester</option>
+`;
+
+}
+if(
+this.value === "BED" &&
+document.getElementById("examType").value !== "BACKPAPER"
+){
+sem.innerHTML += `
+<option value="1">1st Semester</option>
+<option value="2">2nd Semester</option>
+<option value="3">3rd Semester</option>
+<option value="4">4th Semester</option>
+`;
+
+}
+if(
+document.getElementById("examType").value === "BACKPAPER"
+){
+
+if(
+this.value === "BSC" ||
+this.value === "BCOM" ||
+this.value === "BA"
+){
 
 sem.innerHTML += `
 <option value="1">1st Semester</option>
@@ -920,7 +987,10 @@ sem.innerHTML += `
 
 }
 
-if(this.value === "MA"){
+if(
+this.value === "MA" ||
+this.value === "BED"
+){
 
 sem.innerHTML += `
 <option value="1">1st Semester</option>
@@ -930,14 +1000,6 @@ sem.innerHTML += `
 `;
 
 }
-if(this.value === "BED"){
-
-sem.innerHTML += `
-<option value="1">1st Semester</option>
-<option value="2">2nd Semester</option>
-<option value="3">3rd Semester</option>
-<option value="4">4th Semester</option>
-`;
 
 }
 });
